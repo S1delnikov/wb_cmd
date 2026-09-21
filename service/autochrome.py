@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
-import settings
+from . import settings
 import time
 
 
@@ -21,8 +21,10 @@ def parse_product_cards(url_cards, outfile):
             f.write(f"{count}. {product_name} => {product_price.text}\n")
             count += 1
             print(f"\r{time.perf_counter() - start_time} сек.", end="", flush=True) 
-        input()
+
+        return True 
     except:
         print("Что-то пошло не так.")
+        return False
     finally:
         driver.quit()
