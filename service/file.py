@@ -4,10 +4,8 @@ def check_file_type(outfile):
         print('Не указан формат файла! Доступные форматы: .txt, .xlsx')
         return False
     type_of_file = outfile.split('.')[-1]
-    if type_of_file == 'txt':
+    if type_of_file == 'txt' or type_of_file == 'xlsx':
         return type_of_file
-    elif type_of_file == 'xlsx':
-        ...
     else:
         print(f'Вводимый формат файла ({type_of_file}) не поддерживается! Доступные форматы: .txt, .xlsx')
         return False

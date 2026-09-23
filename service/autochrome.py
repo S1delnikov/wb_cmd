@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from openpyxl import Workbook
 from . import settings
 import time
 
@@ -28,17 +29,43 @@ def to_txt(url_cards, outfile):
     finally:
         driver.quit()
 
+def to_xlsx(url_cards, outfile):
+    driver = settings.get_driver()
+    wbook = Workbook()
+    wsheet = wbook.active
+    wsheet.append(['Название', 'Стоимость'])
+    try:
+        driver.get(fr'{url_cards}') 
+        input()
+        product_cards = driver.find_elements(By.CLASS_NAME, settings.div_card)
+    
+        start_time = time.perf_counter()
+        for pc in product_cards:
+            product_name = pc.find_element(By.CLASS_NAME, settings.div_product_name)
+            product_name = ' '.join([pn.strip() if pn != None else "Нет бренда" for pn in product_name.text.split('/')])
+            product_price = pc.find_element(By.CSS_SELECTOR, settings.div_product_price)
+            wsheet.append([product_name, product_price.text])
+            print(f"\r{time.perf_counter() - start_time} сек.", end="", flush=True) 
+        wbook.save(outfile)
+        return True 
+    except:
+        print("Что-то пошло не так.")
+        return False
+    finally:
+        driver.quit()
+
 def parse_product_cards(url_cards, outfile, file_type):    
     print("=============================")
     print("========Начало запроса=======")
     print("=============================")
     if file_type == 'txt':
-        to_txt(url_cards, outfile)
+        result = to_txt(url_cards, outfile)
     elif file_type == 'xlsx':
-        ...
+        result = to_xlsx(url_cards, outfile)
     else:
         ...
-    print('\n')
-    print("=============================")
-    print("===Запрос выполнен успешно===")
-    print("=============================")
+    if result:
+        print('\n')
+        print("=============================")
+        print("===Запрос выполнен успешно===")
+        print("=============================")
